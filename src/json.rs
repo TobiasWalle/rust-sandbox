@@ -1,33 +1,36 @@
 use std::collections::HashMap;
 
-macro_rules! enum_wrap {
-    ($enum:ty, $member:tt, $type:ty) => {
-        impl From<$type> for $enum {
-            fn from(value: $type) -> Self {
-                Self::$member(value)
-            }
+macro_rules! impl_json_value {
+    ({ $($name:tt($for_type:ty)),* $(,)? }) => {
+        #[derive(Debug)]
+        pub enum JsonValue {
+            $($name($for_type),)*
         }
+
+        $(impl From<$for_type> for JsonValue {
+            fn from(value: $for_type) -> Self {
+                Self::$name(value)
+            }
+        })*
     };
 }
 
-#[derive(Debug)]
-pub enum JsonValue {
-    String(String),
-    NumberI32(i32),
-    NumberF32(f32),
-    Boolean(bool),
-    List(Vec<JsonValue>),
-    Object(Json),
-}
-
-enum_wrap!(JsonValue, String, String);
-enum_wrap!(JsonValue, NumberI32, i32);
-enum_wrap!(JsonValue, NumberF32, f32);
-enum_wrap!(JsonValue, Boolean, bool);
-enum_wrap!(JsonValue, List, Vec<JsonValue>);
-enum_wrap!(JsonValue, Object, Json);
-
 pub type Json = HashMap<String, JsonValue>;
+
+impl_json_value!({
+    String(String),
+    ISize(isize),
+    I8(i8),
+    I16(i16),
+    I32(i32),
+    I64(i64),
+    I128(i128),
+    F32(f32),
+    F64(f64),
+    Bool(bool),
+    List(Vec<JsonValue>),
+    Object(Json)
+});
 
 #[macro_export]
 macro_rules! json {
