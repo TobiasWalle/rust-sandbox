@@ -17,7 +17,10 @@ fn try_json_macro() {
 
 fn try_first_macro() {
     println!("-- First Macro --");
-    first_macro::communicate!(say loud "My first procedural macro works :)");
+    first_macro::communicate!(
+        say "My first procedural macro works :)".
+        say loud "Hello World".
+    );
 }
 
 fn main() {
